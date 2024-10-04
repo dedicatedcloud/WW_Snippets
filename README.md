@@ -10,19 +10,22 @@ here
 </details>
 -->
 
-[WordPress](wordpress)
+
 
 [WooCommerce](#woocommerce)
+
+[WordPress](wordpress)
+
 
 1. [Show product variations chosen at checkout in the information table instead of all the variants](#show-product-variations-chosen-at-checkout-in-the-information-table-instead-of-all-the-variants).
 2. [Store Information Settings Page](#store-information-settings-page)
 
 ## Woocommerce
 
-###### Show product variations chosen at checkout in the information table instead of all the variants
+##### Show product variations chosen at checkout in the information table instead of all the variants
 <details>
 
- <summary>Show Code</summary>
+ <summary> Show only the product variations chosen at checkout in the information table instead of all the variants that are attached to that product</summary>
  
 ```
 add_action( 'woocommerce_before_add_to_cart_quantity', 'wwccs_dynamic_atts_variation' );
@@ -52,7 +55,7 @@ function wwccs_dynamic_atts_variation() {
 </details>
 
 
-###### Store Information Settings Page
+##### Store Information Settings Page
 <details>
   <summary>Creates a settings page to add information about a store on the WooCommerce Single product page.</summary>
 
