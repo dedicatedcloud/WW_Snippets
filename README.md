@@ -60,11 +60,6 @@ function wwccs_dynamic_atts_variation() {
   <summary>Creates a settings page to add information about a store on the WooCommerce Single product page.</summary>
 
   ```
-<?php
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
-}
 
 // Add custom admin menu for store details
 add_action('admin_menu', 'custom_store_details_menu');
