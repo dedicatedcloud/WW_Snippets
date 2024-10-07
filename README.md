@@ -10,12 +10,7 @@ here
 </details>
 -->
 
-
-
 [WooCommerce](#woocommerce)
-
-[WordPress](wordpress)
-
 
 1. [Show product variations chosen at checkout in the information table instead of all the variants](#show-product-variations-chosen-at-checkout-in-the-information-table-instead-of-all-the-variants).
 2. [Store Information Settings Page](#store-information-settings-page)
@@ -23,10 +18,11 @@ here
 ## Woocommerce
 
 ##### Show product variations chosen at checkout in the information table instead of all the variants
+
 <details>
 
  <summary> Show only the product variations chosen at checkout in the information table instead of all the variants that are attached to that product</summary>
- 
+
 ```
 add_action( 'woocommerce_before_add_to_cart_quantity', 'wwccs_dynamic_atts_variation' );
   
@@ -47,20 +43,17 @@ function wwccs_dynamic_atts_variation() {
 }
 ```
 
-
 </details>
 
-
-
 </details>
-
 
 ##### Store Information Settings Page
+
 <details>
+
   <summary>Creates a settings page to add information about a store on the WooCommerce Single product page.</summary>
 
-  ```
-
+```php
 // Add custom admin menu for store details
 add_action('admin_menu', 'custom_store_details_menu');
 function custom_store_details_menu() {
@@ -164,7 +157,10 @@ function replace_add_to_cart_button_single() {
     }
 }
 ```
+
 </details>
+
+<br>
 
 # WordPress
 <!--
@@ -231,7 +227,6 @@ function custom_store_details_page() { ?>
     </div>
 <?php }
 
-
 // Replace Add to Cart button with custom HTML for products in "Shop" category on shop pages
 add_filter('woocommerce_loop_add_to_cart_link', 'replace_add_to_cart_button_shop', 10, 2);
 function replace_add_to_cart_button_shop($button, $product) {
@@ -284,6 +279,150 @@ function replace_add_to_cart_button_single() {
 </details>
 -->
 
+##### Auto Create Home & Blog Pages
+
+<details>
+
+  <summary>Auto Create Home & Blog Pages and Set these to  Static Pages</summary>
+
+  ```
+// Add this code to your theme's functions.php file
+
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly.
+}
+
+// Function to create and set Home and Blog pages
+function create_and_set_home_and_post_pages() {
+    // Create a static Home Page
+    $home_page_title = sanitize_text_field('Home');
+    $home_page_content = sanitize_textarea_field('Welcome to our website!');
+    $home_page_check = get_page_by_title($home_page_title);
+
+    if (!$home_page_check) {
+        $home_page_id = wp_insert_post([
+            'post_title'   => $home_page_title,
+            'post_content' => $home_page_content,
+            'post_status'  => 'publish',
+            'post_type'    => 'page',
+        ]);
+
+        // Set the created page as the home page
+        if (!is_wp_error($home_page_id)) {
+            update_option('page_on_front', $home_page_id);
+            update_option('show_on_front', 'page'); // Set to display a static page
+        }
+    }
+
+    // Create a Blog (Posts) Page
+    $post_page_title = sanitize_text_field('Blog');
+    $post_page_check = get_page_by_title($post_page_title);
+
+    if (!$post_page_check) {
+        $post_page_id = wp_insert_post([
+            'post_title'   => $post_page_title,
+            'post_content' => '', // Empty content for blog listing
+            'post_status'  => 'publish',
+            'post_type'    => 'page',
+        ]);
+
+        // Set the created page as the posts page
+        if (!is_wp_error($post_page_id)) {
+            update_option('page_for_posts', $post_page_id);
+        }
+    }
+}
+
+// Run the function when the theme is activated or switched
+add_action('after_switch_theme', 'create_and_set_home_and_post_pages');
+```
+
+</details>
+
+<details>
+  <summary>Auto Create Home, Blog, T & C, Privacy  and Cookie Pages</summary>
+
+  ```php
+
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly.
+}
+
+// Function to create and set Home, Blog, Terms and Conditions, Privacy Policy, and Cookie Policy pages
+function create_and_set_pages() {
+    $site_url = get_site_url(); // Get the actual URL of the website
+
+    // Define pages and their hard-coded content with $site_url
+    $pages = [
+        'Home' => 'Welcome to our website!',
+        'Blog' => '', // Empty content for blog listing
+        'Terms and Conditions' => sprintf(
+            'Terms and Conditions for %s. All rights reserved. These terms outline the rules and regulations for using our website.',
+            esc_url($site_url)
+        ),
+        'Privacy Policy' => sprintf(
+            'Privacy Policy for %s. We are committed to protecting your personal information and your right to privacy.',
+            esc_url($site_url)
+        ),
+        'Cookie Policy' => sprintf(
+            'Cookie Policy for %s. This policy explains what cookies are, how we use cookies, how third-parties we may partner with may use cookies on the service, your choices regarding cookies, and further information about cookies.',
+            esc_url($site_url)
+        ),
+    ];
+
+    foreach ($pages as $title => $content) {
+        $page_check = get_page_by_title($title);
+
+        if (!$page_check) {
+            $page_id = wp_insert_post([
+                'post_title'   => sanitize_text_field($title),
+                'post_content' => sanitize_textarea_field($content),
+                'post_status'  => 'publish',
+                'post_type'    => 'page',
+            ]);
+
+            // Set the created page URLs
+            if (!is_wp_error($page_id)) {
+                // If the page is Terms and Conditions
+                if ($title === 'Terms and Conditions') {
+                    update_option('terms_and_conditions_page', $page_id);
+                }
+                // If the page is Privacy Policy
+                if ($title === 'Privacy Policy') {
+                    update_option('wp_page_for_privacy_policy', $page_id);
+                }
+                // If the page is Cookie Policy
+                if ($title === 'Cookie Policy') {
+                    update_option('cookie_policy_page', $page_id);
+                }
+            }
+        }
+    }
+
+    // Set the Home and Blog pages
+    $home_page_title = 'Home';
+    $blog_page_title = 'Blog';
+
+    // Set Home Page
+    $home_page_check = get_page_by_title($home_page_title);
+    if ($home_page_check) {
+        update_option('page_on_front', $home_page_check->ID);
+        update_option('show_on_front', 'page');
+    }
+
+    // Set Blog Page
+    $blog_page_check = get_page_by_title($blog_page_title);
+    if ($blog_page_check) {
+        update_option('page_for_posts', $blog_page_check->ID);
+    }
+}
+
+// Run the function when the theme is activated or switched
+add_action('after_switch_theme', 'create_and_set_pages');
+
+```
+</details>
+
 <!--
 <details>
   <summary>Code</summary>
@@ -303,24 +442,3 @@ here
 ```
 </details>
 -->
-
-<!--
-<details>
-  <summary>Code</summary>
-
-  ```
-here
-```
-</details>
--->
-
-<!--
-<details>
-  <summary>Code</summary>
-
-  ```
-here
-```
-</details>
--->
-
