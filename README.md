@@ -14,6 +14,7 @@ here
 
 1. [Show product variations chosen at checkout in the information table instead of all the variants](#show-product-variations-chosen-at-checkout-in-the-information-table-instead-of-all-the-variants).
 2. [Store Information Settings Page](#store-information-settings-page)
+3. [Stock display format set to Never show quantity remaining in stock](#stock-display-format-set-to-Never-show-quantity-remaining-in-stock)
 
 ## Woocommerce
 
@@ -159,6 +160,34 @@ function replace_add_to_cart_button_single() {
 ```
 
 </details>
+
+
+##### Stock display format set to Never show quantity remaining in stock
+
+<details>
+	<summary>Never show quantity remaining in stock</summary>
+
+ ```
+
+add_action('init', 'set_default_woocommerce_stock_display_format');
+
+function set_default_woocommerce_stock_display_format() {
+    // Check if WooCommerce is active before applying the setting
+    if (class_exists('WooCommerce')) {
+        // Get the current stock display format setting
+        $current_stock_format = get_option('woocommerce_stock_format');
+
+        // If the setting has not been defined by the use
+        if ($current_stock_format === false) {
+            update_option('woocommerce_stock_format', 'no_amount');
+        }
+    }
+}
+
+```
+
+</details>
+
 
 <br>
 
